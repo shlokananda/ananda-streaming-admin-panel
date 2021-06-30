@@ -34,8 +34,9 @@ const sidebarConfig = [
         path: PATH_DASHBOARD.general.app,
         icon: ICONS.dashboard
       },
-      // { title: 'artist', path: PATH_DASHBOARD.artist.root, icon: ICONS.artist },
-      { title: 'song', path: PATH_DASHBOARD.song.root, icon: ICONS.song }
+      { title: 'artist', path: PATH_DASHBOARD.artist.root, icon: ICONS.artist },
+      { title: 'song', path: PATH_DASHBOARD.song.root, icon: ICONS.song },
+      { title: 'mail', path: PATH_DASHBOARD.mail.root, icon: ICONS.mail },
       // { title: 'user', path: PATH_DASHBOARD.user.list, icon: ICONS.artist }
       // { title: 'album', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics },
       // { title: 'playlist', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics }

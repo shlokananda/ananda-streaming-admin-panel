@@ -151,7 +151,7 @@ export default function SongList() {
   const isSongNotFound = filteredSongs.length === 0;
 
   return (
-    <Page title="User: List | Minimal-UI">
+    <Page title="Songs | Ananda Streaming Platform">
       <Container>
         <HeaderBreadcrumbs
           heading="List of Songs"
@@ -161,27 +161,25 @@ export default function SongList() {
             { name: 'All' }
           ]}
         />
-        {/* action={
+        {/* {
             <Button
               variant="contained"
               component={RouterLink}
               to={PATH_DASHBOARD.user.newUser}
               startIcon={<Icon icon={plusFill} />}
             >
-              New User
+              Upload Song
             </Button>
-          } */}
-
+        } */}
         <Card>
           <UserListToolbar
             numSelected={selected.length}
             filterName={filterTitle}
             onFilterName={handleFilterByTitle}
           />
-
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
+            <TableContainer sx={{ minWidth: 800, height: "calc(100vh - 450px)" }}>
+              <Table stickyHeader>
                 <UserListHead
                   order={order}
                   orderBy={orderBy}

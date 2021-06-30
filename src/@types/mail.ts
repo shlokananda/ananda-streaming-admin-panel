@@ -17,6 +17,7 @@ export type MailLabel = {
   id: MailLabelId;
   type: string;
   name: string;
+  title?: string;
   unreadCount: number;
   color?: string;
 };

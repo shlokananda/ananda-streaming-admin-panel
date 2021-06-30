@@ -79,9 +79,9 @@ export default function ArtistSidebarItem({ label, ...other }: ArtistSidebarItem
         <Icon icon={LABEL_ICONS[label.id]} style={{ color: label.color }} width={24} height={24} />
       </ListItemIcon>
 
-      <ListItemText disableTypography primary={label.name} />
+      <ListItemText disableTypography primary={label.title} />
 
-      {isUnread && <Typography variant="caption">{label.unreadCount}</Typography>}
+      {isUnread && <Typography variant="caption">{label.id}</Typography>}
     </ListItem>
   );
 }

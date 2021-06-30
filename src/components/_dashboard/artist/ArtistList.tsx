@@ -40,7 +40,7 @@ export default function ArtistList({ onOpenSidebar }: ArtistListProps) {
   }, [dispatch, params]);
 
   const handleSelectAllMails = () => {
-    setSelectedMails(artists.allIds.map((mailId) => mailId));
+    setSelectedMails(artists.allIds.map((mailId: any) => mailId));
   };
 
   const handleToggleDense = () => {
@@ -80,7 +80,7 @@ export default function ArtistList({ onOpenSidebar }: ArtistListProps) {
       {!isEmpty ? (
         <Scrollbar>
           <Box sx={{ minWidth: { md: 800 } }}>
-            {artists.allIds.map((mailId) => (
+            {artists.allIds.map((mailId: any) => (
               <ArtistItem
                 key={mailId}
                 isDense={dense}
@@ -94,8 +94,7 @@ export default function ArtistList({ onOpenSidebar }: ArtistListProps) {
         </Scrollbar>
       ) : (
         <EmptyContent
-          title="There is no conversation"
-          img="/static/illustrations/illustration_empty_mail.svg"
+          title="No Songs Found by this artist."
           sx={{ flexGrow: 1, height: 'auto' }}
         />
       )}

@@ -25,7 +25,7 @@ export default function ArtistSidebar({
   onCloseSidebar
 }: ArtistSidebarProps) {
   const { pathname } = useLocation();
-  const { labels } = useSelector((state: RootState) => state.artist);
+  const { labels: artists } = useSelector((state: RootState) => state.artist);
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -48,15 +48,15 @@ export default function ArtistSidebar({
           startIcon={<Icon icon={plusFill} />}
           onClick={handleOpenCompose}
         >
-          Compose
+          Add Artist
         </Button>
       </Box>
 
       <Divider />
 
       <List disablePadding>
-        {labels.map((label) => (
-          <ArtistSidebarItem key={label.id} label={label} />
+        {artists.map((artist: any) => (
+          <ArtistSidebarItem key={artist.id} label={artist} />
         ))}
       </List>
     </Scrollbar>

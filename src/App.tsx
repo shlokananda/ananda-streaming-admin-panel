@@ -22,7 +22,7 @@ export default function App() {
       <ThemePrimaryColor>
         <RtlLayout>
           <NotistackProvider>
-            <Settings />
+            {/* <Settings /> */}
             <ScrollToTop />
             <GoogleAnalytics />
             {isInitialized ? <Router /> : <LoadingScreen />}

@@ -80,7 +80,7 @@ export default function Router() {
         // { path: '/', element: <Navigate to="/dashboard/app" replace /> },
         { path: '/', element: <Navigate to="/app" replace /> },
         { path: 'app', element: <GeneralApp /> },
-        // { path: 'artist', element: <Artist /> },
+        { path: 'artist', element: <Artist /> },
         { path: 'song', element: <SongList /> },
         { path: 'ecommerce', element: <UserList /> },
         // {

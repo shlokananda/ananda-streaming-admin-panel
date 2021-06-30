@@ -2,11 +2,14 @@ import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, experimentalStyled as styled } from '@material-ui/core/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@material-ui/core';
+import { Box, Stack, AppBar, Toolbar, IconButton, Button } from '@material-ui/core';
 // components
 import { MHidden } from '../../components/@material-extend';
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
+import plusFill from '@iconify/icons-eva/plus-fill';
+import { useState } from 'react';
+import SongUploadSelector from 'components/_dashboard/global/SongUploadSelector';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +42,7 @@ type DashboardNavbarProps = {
 };
 
 export default function DashboardNavbar({ onOpenSidebar }: DashboardNavbarProps) {
+  const [openUploader, setOpenUploader] = useState(false);
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -52,9 +56,14 @@ export default function DashboardNavbar({ onOpenSidebar }: DashboardNavbarProps)
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" spacing={{ xs: 0.5, sm: 1.5 }}>
-          {/* <LanguagePopover />
-          <NotificationsPopover />
-          <ContactsPopover /> */}
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => setOpenUploader(true)}
+            startIcon={<Icon icon={plusFill} />}>
+            Upload Songs
+          </Button>
+          <SongUploadSelector isUploaderOpen={openUploader} onCloseUploader={() => setOpenUploader(false)} />
           <AccountPopover />
         </Stack>
       </ToolbarStyle>

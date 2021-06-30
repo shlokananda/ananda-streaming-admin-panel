@@ -4,11 +4,12 @@ import { useParams } from 'react-router-dom';
 import { Container, Card } from '@material-ui/core';
 // redux
 import { useDispatch } from '../../redux/store';
-import { getLabels } from '../../redux/slices/mail';
+// import { getLabels } from '../../redux/slices/mail';
 // routes
 // components
 import Page from '../../components/Page';
 import { ArtistList, ArtistDetails, ArtistSidebar } from '../../components/_dashboard/artist';
+import { getLabels } from '../../redux/slices/artist';
 
 // ----------------------------------------------------------------------
 
@@ -37,3 +38,4 @@ export default function Artist() {
     </Page>
   );
 }
+

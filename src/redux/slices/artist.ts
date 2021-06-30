@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { dispatch } from '../store';
 // utils
-import axios from '../../utils/axios';
+// import axios from '../../utils/axios';
+
 // @types
 import { Artist, ArtistLabel } from '../../@types/artist';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -82,8 +84,8 @@ export function getLabels() {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/artist/labels');
-      dispatch(slice.actions.getLabelsSuccess(response.data.labels));
+      const response = await axios.get('https://jsonplaceholder.typicode.com/todos');
+      dispatch(slice.actions.getLabelsSuccess(response.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -96,8 +98,8 @@ export function getArtists(params: Record<string, string>) {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/artist/artists', { params });
-      dispatch(slice.actions.getArtistsSuccess(response.data.artists));
+      // const response = await axios.get('/api/artist/artists', { params });
+      // dispatch(slice.actions.getArtistsSuccess(response.data.artists));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -110,10 +112,10 @@ export function getArtist(artistId: string) {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/artist/artist', {
-        params: { artistId }
-      });
-      dispatch(slice.actions.getArtistSuccess(response.data.artist));
+      // const response = await axios.get('/api/artist/artist', {
+      //   params: { artistId }
+      // });
+      // dispatch(slice.actions.getArtistSuccess(response.data.artist));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
