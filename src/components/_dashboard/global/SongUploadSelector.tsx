@@ -30,6 +30,7 @@ const RootStyle = styled('div')(({ theme }) => ({
   bottom: 0,
   zIndex: 1999,
   minHeight: 440,
+  width: 500,
   outline: 'none',
   display: 'flex',
   position: 'fixed',
@@ -59,6 +60,7 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [fullScreen, setFullScreen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<any>([]);
 
   const handleExitFullScreen = () => {
     setFullScreen(false);
@@ -73,11 +75,17 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
     setFullScreen(false);
   };
 
-  let folderInput: any;
-  let fileInput: any;
+  let folderInput: any; // Ref for Folder Select
+  let fileInput: any; // Ref for File Select
 
   const readFile = (event: any) => {
-    console.log(event)
+    const fileList: any[] = event.target.files;
+    const loadedFiles = []
+    for (let index = 0; index < fileList.length; index++) {
+      const element = fileList[index];
+      loadedFiles.push(element)
+    }
+    setSelectedFiles(loadedFiles)
   }
 
   if (!isUploaderOpen) {
@@ -89,6 +97,9 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
       <Backdrop open={fullScreen || isMobile} sx={{ zIndex: 1998 }} />
       <RootStyle
         sx={{
+          ...(isMobile && {
+            width: 350
+          }),
           ...(fullScreen && {
             top: 0,
             left: 40,
@@ -127,12 +138,12 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
           </IconButton>
         </Box>
 
-        <Box>
+        <Box sx={{...(selectedFiles.length > 0 && { height: "100%"})}}>
+          {/* Files Selector */}
           <Box sx={{
               px: 2,
-              minWidth: {
-                sm: `500px`,
-              },
+              width: "100%",
+              height: 100,
               display: 'flex',
               justifyContent: "space-evenly",
               alignItems: 'center'
@@ -149,16 +160,23 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
               startIcon={<Icon icon={fileAddFill} />}>
               Select Files
             </Button> 
-            <input
-            accept=".jpg"
-            onChange={(event)=> { readFile(event) }}
-                  type="file"  
-                  directory=""
-                  webkitdirectory=""
-                  style={{ display: "None" }}
-                  ref={input => folderInput = input}
-                />
+            {/* Hidden Inputs */}
+            <input accept="audio/mp3,audio/*" onChange={(event)=> { readFile(event) }} type="file" directory=""
+                webkitdirectory="" style={{ display: "None" }} ref={input => folderInput = input}/>
+            <input accept=".audio/mp3,audio/*" multiple onChange={(event)=> { readFile(event) }} type="file"
+               style={{ display: "None" }} ref={input => fileInput = input}/>
           </Box>
+
+          {/* Selected File List */}
+            { selectedFiles.length > 0 && (
+              <Box sx={{ minHeight: 216, maxHeight: "calc(100vh - 292px)", borderTop: "1px solid #e0e0e0" }}>
+                { selectedFiles.map((file:any) => {
+                  return (
+                    <p key={file.name}>{file.name}</p>
+                  )
+                }) }
+              </Box>
+            ) }
         </Box>
 
         <Box sx={{ py: 2, px: 3, display: 'flex', height: 60, alignItems: 'center', justifyContent: "flex-end", borderTop: "1px solid #e0e0e0" }}>
@@ -169,6 +187,8 @@ export default function SongUploadSelector({ isUploaderOpen, onCloseUploader }: 
   );
 }
 
+
+// Extend HTML Tag to support direcotry option on Input Tag
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     // extends React's HTMLAttributes
