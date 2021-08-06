@@ -1,63 +1,79 @@
 // mock api
-import './_apis_';
+import "./_apis_";
 
 // i18n
-import './locales/i18n';
+import "./locales/i18n";
 
 // highlight
-import './utils/highlight';
+import "./utils/highlight";
 
 // scroll bar
-import 'simplebar/src/simplebar.css';
+import "simplebar/src/simplebar.css";
 
 // map
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 
 // lightbox
-import 'react-image-lightbox/style.css';
+import "react-image-lightbox/style.css";
 
 // editor
-import 'react-quill/dist/quill.snow.css';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import "react-quill/dist/quill.snow.css";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 // slick-carousel
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // lazy image
-import 'lazysizes';
-import 'lazysizes/plugins/attrchange/ls.attrchange';
-import 'lazysizes/plugins/object-fit/ls.object-fit';
-import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+import "lazysizes";
+import "lazysizes/plugins/attrchange/ls.attrchange";
+import "lazysizes/plugins/object-fit/ls.object-fit";
+import "lazysizes/plugins/parent-fit/ls.parent-fit";
 
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
-import { Provider as ReduxProvider } from 'react-redux';
-import { PersistGate } from 'redux-persist/lib/integration/react';
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
+import { Provider as ReduxProvider } from "react-redux";
+import { PersistGate } from "redux-persist/lib/integration/react";
 // material
-import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
-import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+import AdapterDateFns from "@material-ui/lab/AdapterDateFns";
+import LocalizationProvider from "@material-ui/lab/LocalizationProvider";
 // redux
-import { store, persistor } from './redux/store';
+import { store, persistor } from "./redux/store";
 // contexts
-import { SettingsProvider } from './contexts/SettingsContext';
+import { SettingsProvider } from "./contexts/SettingsContext";
 // components
-import LoadingScreen from './components/LoadingScreen';
+import LoadingScreen from "./components/LoadingScreen";
+
+// Global Style
+import './style.css';
 
 // Check our docs
 // https://minimal-docs.vercel.app/authentication/ts-version
 
-import { AuthProvider } from './contexts/JWTContext';
+import { AuthProvider } from "./contexts/JWTContext";
 // import { AuthProvider } from './contexts/AwsCognitoContext';
 // import { AuthProvider } from './contexts/Auth0Context';
 // import { AuthProvider } from './contexts/FirebaseContext';
 
-//
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+// Apollo GraphQL
+import {
+  ApolloClient,
+  NormalizedCacheObject,
+  ApolloProvider,
+} from "@apollo/client";
 
+//
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { cache } from "./cache";
 // ----------------------------------------------------------------------
+
+// Initialize ApolloClient
+const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+  cache,
+  uri: "http://localhost:4000/graphql",
+});
 
 ReactDOM.render(
   <HelmetProvider>
@@ -67,7 +83,9 @@ ReactDOM.render(
           <SettingsProvider>
             <BrowserRouter>
               <AuthProvider>
-                <App />
+                <ApolloProvider client={client}>
+                  <App />
+                </ApolloProvider>
               </AuthProvider>
             </BrowserRouter>
           </SettingsProvider>
@@ -75,7 +93,7 @@ ReactDOM.render(
       </PersistGate>
     </ReduxProvider>
   </HelmetProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

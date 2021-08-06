@@ -1,39 +1,38 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 // material
-import { experimentalStyled as styled } from '@material-ui/core/styles';
-import { Box, Divider, Typography } from '@material-ui/core';
+import { experimentalStyled as styled } from "@material-ui/core/styles";
+import { Box, Divider, Typography } from "@material-ui/core";
 // redux
-import { RootState, useDispatch, useSelector } from '../../../redux/store';
-import { getMail } from '../../../redux/slices/mail';
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
+import { getMail } from "../../../redux/slices/mail";
 // theme
-import typography from '../../../theme/typography';
+import typography from "../../../theme/typography";
 //
-import Markdown from '../../Markdown';
-import Scrollbar from '../../Scrollbar';
+import Markdown from "../../Markdown";
+import Scrollbar from "../../Scrollbar";
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')({
+const RootStyle = styled("div")({
   flexGrow: 1,
-  display: 'flex',
-  flexDirection: 'column'
+  display: "flex",
+  flexDirection: "column",
 });
 
-const MarkdownWrapperStyle = styled('div')(({ theme }) => ({
-  '& > p': {
+const MarkdownWrapperStyle = styled("div")(({ theme }) => ({
+  "& > p": {
     ...typography.body1,
-    marginBottom: theme.spacing(2)
-  }
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 // ----------------------------------------------------------------------
 
 export default function ArtistDetails() {
-  const { mailId = '' } = useParams();
+  const { mailId = "" } = useParams();
   const dispatch = useDispatch();
   const mail = useSelector((state: RootState) => state.mail.mails.byId[mailId]);
-  const isAttached = mail && mail.files.length > 0;
 
   useEffect(() => {
     dispatch(getMail(mailId));

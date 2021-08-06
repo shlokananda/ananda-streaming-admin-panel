@@ -1,9 +1,9 @@
 import { filter } from "lodash";
-import { useState, useEffect } from "react";
-// Icons
-import editFill from "@iconify/icons-eva/edit-fill";
-import trash2Outline from "@iconify/icons-eva/trash-2-outline";
 import { Icon } from "@iconify/react";
+import { sentenceCase } from "change-case";
+import { useState, useEffect } from "react";
+import plusFill from "@iconify/icons-eva/plus-fill";
+import { Link as RouterLink } from "react-router-dom";
 
 // Graphql
 import { useQuery } from "@apollo/react-hooks";
@@ -13,44 +13,48 @@ import { GET_ALL_TRACKS } from "../../queries/track";
 import { useTheme } from "@material-ui/core/styles";
 import {
   Card,
-  Checkbox,
-  Container,
-  IconButton,
   Table,
+  Stack,
+  Avatar,
+  Button,
+  Checkbox,
+  TableRow,
   TableBody,
   TableCell,
+  Container,
+  Typography,
   TableContainer,
   TablePagination,
-  TableRow,
 } from "@material-ui/core";
 // redux
 import { RootState, useDispatch, useSelector } from "../../redux/store";
-import { deleteUser } from "../../redux/slices/user";
+import { getUserList, deleteUser } from "../../redux/slices/user";
 // routes
 import { PATH_DASHBOARD } from "../../routes/paths";
 // @types
+import { UserManager } from "../../@types/user";
 // components
 import Page from "../../components/Page";
+import Label from "../../components/Label";
 import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
 import HeaderBreadcrumbs from "../../components/HeaderBreadcrumbs";
-import { UserListToolbar } from "../../components/_dashboard/user/list";
+import {
+  UserListHead,
+  UserListToolbar,
+  UserMoreMenu,
+} from "../../components/_dashboard/user/list";
 import { Song } from "../../@types/song";
-import { getSongList } from "../../redux/slices/song";
-import ListHead from "components/_dashboard/user/list/ListHead";
-import ListToolbar from "components/_dashboard/user/list/ListToolbar";
-import { secondsToHms } from "utils/timeFunctions";
-import Player from "./Player";
+import { getSongList, getSongs } from "../../redux/slices/song";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
   { id: "duration", label: "Duration", alignRight: false },
-  { id: "album", label: "Album", alignRight: false },
   { id: "artist", label: "Artist", alignRight: false },
-  { id: "year", label: "Year", alignRight: true },
-  { id: "_id", label: "Action", alignCenter: true },
-  // { id: "genre", label: "Genre", alignRight: false },
+  { id: "album", label: "Album", alignRight: false },
+  { id: "genre", label: "Genre", alignRight: false },
   { id: "" },
 ];
 
@@ -88,59 +92,27 @@ function applySortFilter(
   if (query) {
     return filter(
       array,
-      // (_song) => _song.title.toLowerCase().indexOf(query.toLowerCase()) !== -1
-      (_song) =>
-        JSON.stringify(_song).toLowerCase().includes(query.toLowerCase())
+      (_song) => _song.title.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
 export default function SongList() {
-  const getAllSongListQuery = useQuery(GET_ALL_TRACKS);
+  const getAllSongList = useQuery(GET_ALL_TRACKS);
   const theme = useTheme();
   const dispatch = useDispatch();
-  const songList =
-    getAllSongListQuery.data && getAllSongListQuery.data.mediaMany;
+  const { songList } = useSelector((state: RootState) => state.song);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [selected, setSelected] = useState<string[]>([]);
   const [orderBy, setOrderBy] = useState("name");
   const [filterTitle, setFilterTitle] = useState("");
-  const [filterAll, setFilterAll] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10); //5
-  const [selectedFile, setSelectedFile] = useState(
-    new Audio(
-      "https://streaming-platform-test.s3.us-east-2.amazonaws.com/04%20Rubaiyat.mp3"
-    )
-  ); //5
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     dispatch(getSongList());
   }, [dispatch]);
-
-  const playPause = (newFile?: any) => {
-    if (newFile) {
-      setSelectedFile(new Audio(newFile));
-    }
-    console.log(selectedFile, isPlaying);
-
-    // Get state of song
-    if (selectedFile) {
-      if (isPlaying) {
-        // Pause the song if it is playing
-        selectedFile.pause();
-        console.log("Pause");
-      } else {
-        // Play the song if it is paused
-        selectedFile.play();
-        console.log("Pause");
-      }
-    }
-    // Change the state of song
-    setIsPlaying(!isPlaying);
-  };
 
   const handleRequestSort = (property: string) => {
     const isAsc = orderBy === property && order === "asc";
@@ -150,7 +122,7 @@ export default function SongList() {
 
   const handleSelectAllClick = (checked: boolean) => {
     if (checked) {
-      const newSelecteds = songList.map((n: any) => n.title);
+      const newSelecteds = songList.map((n) => n.title);
       console.log(songList);
       setSelected(newSelecteds);
       return;
@@ -187,41 +159,20 @@ export default function SongList() {
     setFilterTitle(filterTitle);
   };
 
-  const handleFilterFreeText = (keyword: string) => {
-    setFilterAll(keyword);
-  };
-
   const handleDeleteUser = (userId: string) => {
     dispatch(deleteUser(userId));
-  };
-
-  const handleFileSelection = (rowData: any) => {
-    console.log(rowData);
-    const fileUrl = rowData.file.location;
-    playPause(fileUrl);
-  };
-  const handlePlayPause = (playing: boolean) => {
-    console.log(playing);
-    setIsPlaying(playing);
-    playPause();
   };
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - songList.length) : 0;
 
   const filteredSongs = applySortFilter(
-    songList || [],
+    songList,
     getComparator(order, orderBy),
-    // filterTitle
-    filterAll
+    filterTitle
   );
 
   const isSongNotFound = filteredSongs.length === 0;
-
-  // Table Actions
-  const handleEdit = (data: any) => {
-    console.log(data);
-  };
 
   return (
     <Page title="Songs | Ananda Streaming Platform">
@@ -234,79 +185,104 @@ export default function SongList() {
             { name: "All" },
           ]}
         />
+        {/* {
+            <Button
+              variant="contained"
+              component={RouterLink}
+              to={PATH_DASHBOARD.user.newUser}
+              startIcon={<Icon icon={plusFill} />}
+            >
+              Upload Song
+            </Button>
+        } */}
         <Card>
-          <ListToolbar
-            isPlaying={isPlaying}
-            title="song"
+          <UserListToolbar
             numSelected={selected.length}
-            filterName={filterAll}
-            onFilterName={handleFilterFreeText}
-            onPlayChange={handlePlayPause}
+            filterName={filterTitle}
+            onFilterName={handleFilterByTitle}
           />
-          {/* <Player file={selectedFile} type="audio/mpeg" /> */}
-          {/* // onFileChange="handleFileChange($event)" */}
-
           <Scrollbar>
             <TableContainer
               sx={{ minWidth: 800, height: "calc(100vh - 450px)" }}
             >
-              <Table>
-                <ListHead
+              <Table stickyHeader>
+                <UserListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={songList && songList?.length}
+                  rowCount={songList.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
+                {/* Graphql Data */}
                 <TableBody>
-                  {filteredSongs
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((song: any) => {
-                      const {
-                        _id,
-                        title,
-                        format,
-                        artist,
-                        album,
-                        year,
-                        genre,
-                      } = song;
+                  {/* {filteredSongs
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                  {getAllSongList.data.mediaMany &&
+                    getAllSongList.data.mediaMany.map((row: any) => {
+                      console.log(row);
+                      const { id, title, duration, artist, album, genre } = row;
                       const isItemSelected = selected.indexOf(title) !== -1;
-                      // console.log(song);
+
                       return (
-                        <TableRow key={_id}>
+                        <TableRow
+                          hover
+                          key={id}
+                          tabIndex={-1}
+                          role="checkbox"
+                          selected={isItemSelected}
+                          aria-checked={isItemSelected}
+                        >
                           <TableCell padding="checkbox">
                             <Checkbox
                               checked={isItemSelected}
-                              onClick={() => handleClick(title)}
+                              onClick={() => handleClick(id)}
                             />
                           </TableCell>
-                          <TableCell align="left">
-                            <span
-                              className="link"
-                              onClick={() => handleFileSelection(song)}
-                            >
-                              {title}
-                            </span>
-                          </TableCell>
-                          <TableCell align="left">
-                            {secondsToHms(format.duration.toFixed(2))}
+                          <TableCell align="left">{title}</TableCell>
+                          <TableCell align="left">{duration}</TableCell>
+
+                          <TableCell component="th" scope="row" padding="none">
+                            <Typography variant="subtitle2" noWrap>
+                              {artist}
+                            </Typography>
                           </TableCell>
                           <TableCell align="left">{album}</TableCell>
-                          <TableCell align="left">{artist}</TableCell>
-                          <TableCell align="right">{year}</TableCell>
-                          {/* Actions */}
-                          <TableCell>
-                            <IconButton onClick={() => handleEdit(song)}>
-                              <Icon icon={editFill} width={24} height={24} />
-                            </IconButton>
-                          </TableCell>
+                          {/* <TableCell align="left">
+                            <Label
+                              variant={
+                                theme.palette.mode === "light"
+                                  ? "ghost"
+                                  : "filled"
+                              }
+                              color="success"
+                            >
+                              {sentenceCase(genre)}
+                            </Label>
+                          </TableCell> */}
+
+                          {/* <TableCell align="right">
+                            <UserMoreMenu onDelete={() => handleDeleteUser(id)} userName={name} />
+                          </TableCell> */}
                         </TableRow>
                       );
                     })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
                 </TableBody>
+                {isSongNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <SearchNotFound searchQuery={filterTitle} />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
               </Table>
             </TableContainer>
           </Scrollbar>
@@ -314,7 +290,7 @@ export default function SongList() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={songList?.length || 0}
+            count={songList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(e, page) => setPage(page)}
